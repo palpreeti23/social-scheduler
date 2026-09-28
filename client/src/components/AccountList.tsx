@@ -29,7 +29,7 @@ function AccountList({ accounts, onDisconnect }: AccountsListProps) {
         </div>
         <p className="text-slate-700 text-lg"> No accounts connected</p>
         <p className="text-sm text-slate-400 mt-1 max-w-xs text-center">
-          Connect ypur first social platform to start scheduling and automating
+          Connect your first social platform to start scheduling and automating
           your content.
         </p>
       </div>

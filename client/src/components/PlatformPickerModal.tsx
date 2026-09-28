@@ -30,7 +30,7 @@ function PlatformPickerModal({
 
         {/* platform list  */}
 
-        <div className="p-6 flx flex-col gap-2">
+        <div className="p-6 flex flex-col gap-2">
           {PLATFORMS.map((p) => {
             const isConnected = connectedIds.includes(p.id);
             const isConnecting = connecting === p.id;

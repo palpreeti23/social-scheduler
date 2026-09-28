@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { dummyAccountsData, PLATFORMS } from "../assets/assets";
 import { PlusIcon } from "lucide-react";
 import AccountList from "../components/AccountList";
-import { platform } from "os";
 import PlatformPickerModal from "../components/PlatformPickerModal";
 
 function Accounts() {
