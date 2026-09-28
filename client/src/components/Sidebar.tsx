@@ -62,7 +62,7 @@ function Sidebar({
               to={item.path}
               end={item.path === "/dashboard"}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all duration-150 border ${isActive ? " bg-red-50 text-red-600 border-red-100" : "text-slate-500 hover:bg-slate-50 border-s-transparent hover:text-slate-700"}`}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all duration-150 border border-slate-50 ${isActive ? " bg-red-50 text-red-600 border-red-100" : "text-slate-500 hover:bg-slate-50 border-s-transparent hover:text-slate-700"}`}
             >
               <item.icon
                 className={`size-4.5 shrink-0 ${isActive ? "text-red-500" : "text-slate-500"}`}
