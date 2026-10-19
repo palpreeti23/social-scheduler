@@ -70,7 +70,7 @@ export const generatePost = async (
     const ai = new GoogleGenAI({ apiKey });
     //generate text
     const textResponse = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.8-flash",
       contents: `Generate a social media post based on this prompt:" ${prompt}".
       Tone: ${tone}.
       Include relevent hashtags.
@@ -122,7 +122,21 @@ export const generatePost = async (
             },
           );
 
-          const generationId = leoResponse.data.generate.generationId;
+          const leoData = leoResponse.data;
+
+          if (!leoData?.generate?.generationId) {
+            console.error(
+              "Leonardo image generation failed:",
+              JSON.stringify(leoData, null, 2),
+            );
+
+            throw new Error(
+              leoData?.[0]?.message ||
+                "Leonardo did not return a generation ID.",
+            );
+          }
+
+          const generationId = leoData.generate.generationId;
 
           const tempUrl = await pollLeonardoJob(generationId, leonardoKey);
 
@@ -238,6 +252,10 @@ export const schedulePost = async (
 
     res.status(201).json(post);
   } catch (error: any) {
-    res.status(500).json({ message: error?.message || "Server error" });
+    console.error("Error in schedulePost:", error);
+
+    res.status(500).json({
+      message: error?.message || "Server error",
+    });
   }
 };
