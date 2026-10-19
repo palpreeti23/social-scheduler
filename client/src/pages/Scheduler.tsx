@@ -8,6 +8,8 @@ import {
   SendIcon,
   XIcon,
 } from "lucide-react";
+import api from "../api/axios";
+import toast from "react-hot-toast";
 
 function Scheduler() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -19,12 +21,17 @@ function Scheduler() {
   const [loading, setLoading] = useState(false);
 
   const fetchPosts = async () => {
-    setPosts(dummyPostsData);
+    try {
+      const { data } = await api.get("/api/posts");
+      setPosts(data);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
   };
 
   useEffect(() => {
     (async () => await fetchPosts())();
-    const interval = setInterval(async () => await fetchPosts(), 1000);
+    const interval = setInterval(async () => await fetchPosts(), 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -38,11 +45,54 @@ function Scheduler() {
 
   const handleSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (selectedPlatform.length === 0) {
+      toast.error("Select at least one platform");
+      return;
+    }
+    if (!scheduleDate || !scheduleTime) {
+      toast.error("Select date and time");
+      return;
+    }
+    if (selectedPlatform.includes("instagram") && !mediaFile) {
+      toast.error("instagram requires an image or video");
+      return;
+    }
+
+    const scheduledFor = new Date(
+      `${scheduleDate}T${scheduleTime}`,
+    ).toISOString();
+    const formData = new FormData();
+    formData.append("content", content);
+    formData.append("scheduledFor", scheduledFor);
+    formData.append("status", "scheduled");
+    formData.append("platforms", JSON.stringify(selectedPlatform));
+    if (mediaFile) formData.append("media", mediaFile);
+
     setLoading(true);
-    setTimeout(() => {
+
+    // deletable
+    for (const [key, value] of formData.entries()) {
+      console.log(
+        key,
+        value instanceof File ? `${value.name} (${value.size} bytes)` : value,
+      );
+    }
+    try {
+      await api.post("/api/posts", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Post scheduled!");
+      setContent("");
+      setScheduleDate("");
+      setScheduleTime("");
+      setSelectedPlatforms([]);
+      setMediaFile(null);
+      fetchPosts();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
+    } finally {
       setLoading(false);
-      setPosts((prev) => [...prev, dummyPostsData[0]]);
-    }, 1000);
+    }
   };
 
   return (
